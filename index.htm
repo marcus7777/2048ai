@@ -1,18 +1,65 @@
 <html>
-  <head>
-    <script src="/bower_components/convnetjs/build/convnet.js"></script>
-    <script src="/bower_components/convnetjs/build/util.js"></script>
-    <script src="/bower_components/convnetjs/build/vis.js"></script>
-    <script src="/bower_components/convnetjs/build/deepqlearn.js"></script>
-  </head>
-  <body>
-    <h1>a AI to play 2048</h1>
-    <h2>Input</h2>
-    <p>16 Numbers</p>
-    <h2>Output</h2>
-    <p>Moves 4 (0123) </p>
-    <h2>Training</h2>
-    <p>Score > more</p>
-    <p>end game = less</p>
-  </body>
+    <head>
+        <script src="/bower_components/convnetjs/build/convnet.js"></script>
+        <script src="/bower_components/convnetjs/build/util.js"></script>
+        <script src="/bower_components/convnetjs/build/vis.js"></script>
+        <script src="/bower_components/convnetjs/build/deepqlearn.js"></script>
+    </head>
+    <body>
+        <h1>a AI to play 2048</h1>
+        <h2>Input</h2>
+        <p>16 Numbers</p>
+        <h2>Output</h2>
+        <p>Moves 4 (0123) </p>
+        <h2>Training</h2>
+        <p>Score > more</p>
+        <p>end game = less</p>
+        <div class="container">
+            <div class="game-container">
+                <div class="game-message">
+                    <div class="lower">
+                        <a class="keep-playing-button">Keep going</a>
+                        <a class="retry-button">Try again</a>
+                    </div>
+                </div>
+
+                <div class="grid-container">
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                        <div class="grid-cell"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/bower_components/js/bind_polyfill.js"></script>
+        <script src="/bower_components/js/classlist_polyfill.js"></script>
+        <script src="/bower_components/js/animframe_polyfill.js"></script>
+        <script src="/bower_components/js/keyboard_input_manager.js"></script>
+        <script src="/bower_components/js/html_actuator.js"></script>
+        <script src="/bower_components/js/grid.js"></script>
+        <script src="/bower_components/js/tile.js"></script>
+        <script src="/bower_components/js/local_storage_manager.js"></script>
+        <script src="/bower_components/js/game_manager.js"></script>
+        <script src="/bower_components/js/application.js"></script>
+    </body>
 </html>
