@@ -7,17 +7,23 @@
         <link href="/bower_components/2048/style/main.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <h1>a AI to play 2048</h1>
-        <h2>Input</h2>
-        <p>16 Numbers</p>
-        <h2>Output</h2>
-        <p>Moves 4 (0123) </p>
-        <h2>Training</h2>
-        <p>Score > more</p>
-        <p>end game = less</p>
         <div class="container">
+            <div class="heading">
+                <h1 class="title">2048</h1>
+                <div class="scores-container">
+                    <div class="score-container">0</div>
+                    <div class="best-container">0</div>
+                </div>
+            </div>
+
+            <div class="above-game">
+                <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+                <a class="restart-button">New Game</a>
+            </div>
+
             <div class="game-container">
                 <div class="game-message">
+                    <p></p>
                     <div class="lower">
                         <a class="keep-playing-button">Keep going</a>
                         <a class="retry-button">Try again</a>
@@ -50,17 +56,63 @@
                         <div class="grid-cell"></div>
                     </div>
                 </div>
+
+                <div class="tile-container">
+
+                </div>
             </div>
-        </div>
-        <script src="/bower_components/2048/js/bind_polyfill.js"></script>
-        <script src="/bower_components/2048/js/classlist_polyfill.js"></script>
-        <script src="/bower_components/2048/js/animframe_polyfill.js"></script>
-        <script src="/bower_components/2048/js/keyboard_input_manager.js"></script>
-        <script src="/bower_components/2048/js/html_actuator.js"></script>
-        <script src="/bower_components/2048/js/grid.js"></script>
-        <script src="/bower_components/2048/js/tile.js"></script>
-        <script src="/bower_components/2048/js/local_storage_manager.js"></script>
-        <script src="/bower_components/2048/js/game_manager.js"></script>
-        <script src="/bower_components/2048/js/application.js"></script>
+            <script src="/bower_components/2048/js/bind_polyfill.js"></script>
+            <script src="/bower_components/2048/js/classlist_polyfill.js"></script>
+            <script src="/bower_components/2048/js/animframe_polyfill.js"></script>
+            <script src="/bower_components/2048/js/keyboard_input_manager.js"></script>
+            <script src="/bower_components/2048/js/html_actuator.js"></script>
+            <script src="/bower_components/2048/js/grid.js"></script>
+            <script src="/bower_components/2048/js/tile.js"></script>
+            <script src="/bower_components/2048/js/local_storage_manager.js"></script>
+            <script src="/bower_components/2048/js/game_manager.js"></script>
+            <script src="/bower_components/2048/js/application.js"></script>
+            <h1>a AI to play 2048</h1>
+            <h2>Input</h2>
+            <p>16 Numbers</p>
+            <h2>Output</h2>
+            <p>Moves 4 (0123) </p>
+            <h2>Training</h2>
+            <p>Score > more</p>
+            <p>end game = less</p>
+            <textarea id="qspec" style="width:100%; height:200px;">
+var num_inputs = 16
+var num_actions = 4
+var temporal_window = 1; // amount of temporal memory. 0 = agent lives in-the-moment :)
+var network_size = num_inputs*temporal_window + num_actions*temporal_window + num_inputs;
+
+// the value function network computes a value of taking any of the possible actions
+// given an input state. Here we specify one explicitly the hard way
+// but user could also equivalently instead use opt.hidden_layer_sizes = [20,20]
+// to just insert simple relu hidden layers.
+var layer_defs = [];
+layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
+layer_defs.push({type:'regression', num_neurons:num_actions});
+
+// options for the Temporal Difference learner that trains the above net
+// by backpropping the temporal difference learning rule.
+var tdtrainer_options = {learning_rate:0.001, momentum:0.0, batch_size:64, l2_decay:0.01};
+
+var opt = {}
+opt.temporal_window = temporal_window
+opt.experience_size = 30000
+opt.start_learn_threshold = 1000
+opt.gamma = 0.7
+opt.learning_steps_total = 200000
+opt.learning_steps_burnin = 3000
+opt.epsilon_min = 0.05
+opt.epsilon_test_time = 0.05
+opt.layer_defs = layer_defs
+opt.tdtrainer_options = tdtrainer_options
+
+var brain = new deepqlearn.Brain(num_inputs, num_actions, opt); // woohoo
+
+            </textarea>
     </body>
 </html>
