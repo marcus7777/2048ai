@@ -74,16 +74,19 @@
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
+  var theInput = []
+
   for (i = 0; i < 4; ++i) {
     for (j = 0; j < 4; ++j) {    
       if (gameState.grid.cells[i][j] !== null) {
-        console.log(gameState.grid.cells[i][j].value)
+        theInput.push(gameState.grid.cells[i][j].value)
       } else {
-        console.log(0)
+        theInput.push(0)
       }
     }
   }
-  
+  var numbers = document.querySelector(".show-number")
+  numbers.innerHTML = "" + theInput 
   this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
 };
 KeyboardInputManager.prototype.listen = function () {
@@ -191,9 +194,9 @@ KeyboardInputManager.prototype.listen = function () {
             </script>
             <h1>a AI to play 2048</h1>
             <h2>Input</h2>
-            <p>16 Numbers</p>
+            <p>16 Numbers - <span class="show-number"></span></p>
             <h2>Output</h2>
-            <p>Moves 4 (<span class="move0">0</span><span class="move1">1</span><span class="move2">2</span><span class="move3">3</span>) </p>
+            <p>Moves 4 (<span class="move0">0</span>,<span class="move1">1</span>,<span class="move2">2</span>,<span class="move3">3</span>) </p>
             <h2>Training</h2>
             <p>Score > more</p>
             <p>end game = less</p>
