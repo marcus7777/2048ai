@@ -70,7 +70,12 @@
             <script src="/bower_components/2048/js/tile.js"></script>
             <script src="/bower_components/2048/js/local_storage_manager.js"></script>
             <script src="/bower_components/2048/js/game_manager.js"></script>
-            <script src="/bower_components/2048/js/application.js"></script>
+            <script>
+              
+              window.requestAnimationFrame(function () {
+                new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
+              });
+            </script>
             <h1>a AI to play 2048</h1>
             <h2>Input</h2>
             <p>16 Numbers</p>
