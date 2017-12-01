@@ -72,7 +72,7 @@
             <script src="/bower_components/2048/js/keyboard_input_manager.js"></script>
             <script>
 var move
-var lastmove
+var lastScore = 0
 var spec
 var brain
 var theMover
@@ -83,7 +83,7 @@ setInterval(function(){
   theMover(1)
   theMover(2)
   theMover(3)
-}, 1000)
+}, 500)
 
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
@@ -109,8 +109,9 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     }
   }
   if (move !== 4 && move !== undefined) {
-    brain.backward(gameState.score * count)
+    brain.backward((+gameState.score - +lastScore) * count)
   }
+  lastScore = +gameState.score
   if (move === 4) {
     brain.backward(-1)
   }
@@ -118,6 +119,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
   if (count > 1) {
     theMover(move)
   } else {
+    document.querySelector(".show-log").innerHTML = " " + gameState.score
     theRestarter()
   } 
   document.querySelector(".show-move").innerHTML = "" + move
