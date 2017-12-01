@@ -116,7 +116,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
   } else {
     document.querySelector(".show-log").innerHTML += " " + gameState.score
     var logTail = document.querySelector(".show-log").innerHTML.split(" ").slice(-10)
-    var logHead = document.querySelector(".show-log").innerHTML.split(" ").slice(0, 10)
+    var logHead = document.querySelector(".show-log").innerHTML.split(" ").slice(1, 11)
 
     console.log(logTail,logHead)
 
