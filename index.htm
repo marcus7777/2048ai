@@ -169,19 +169,19 @@ KeyboardInputManager.prototype.listen = function () {
   // Respond to button presses
   theMover = function(m){
     self.emit("move", m)
-    if (resetter) {
-      clearTimeout(resetter)
-    }
     if (timer) {
       clearTimeout(timer)
     }
 
     timer = setTimeout( function(){
       theMover((m+1) % 4)
+      if (resetter) {
+        clearTimeout(resetter)
+      }
       resetter = setTimeout( function(){
         theRestarter()
       }, 100)
-    }, 10)
+    }, 5)
 
   }
   theRestarter = function(){
