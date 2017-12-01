@@ -103,7 +103,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     }
   }
   if (move !== 4 && move !== undefined) {
-    brain.backward((+gameState.score - +lastScore) * count)
+    brain.backward(count)
   }
   lastScore = +gameState.score
   if (move === 4) {
