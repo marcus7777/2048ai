@@ -104,10 +104,10 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     brain.backward(gameState.score * count)
   }
   if (move === 4) {
-    brain.backward(0)
+    brain.backward(-1)
   }
   move = brain.forward(theInput)
-  if (count > 0) {
+  if (count > 1) {
     theMover(move)
   } else {
     theRestarter()
@@ -152,7 +152,9 @@ KeyboardInputManager.prototype.listen = function () {
   theMover = function(m){
     self.emit("move", m)
   }
-  theRestarter = this.restart
+  theRestarter = function(){
+    self.emit("restart")
+  }
   this.bindButtonPress(".move0", function(){
     self.emit("move", 0)
     if (move !== 0) {
