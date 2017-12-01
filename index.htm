@@ -111,7 +111,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     brain.backward(0)
   }
   move = brain.forward(theInput)
-  if (count > 1) {
+  if (count !== 0) {
     theMover(move)
   } else {
     document.querySelector(".show-log").innerHTML += " " + gameState.score
