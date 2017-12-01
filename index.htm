@@ -1,6 +1,6 @@
 <html>
     <head>
-        <script src="/bower_components/convnetjs/build/convnet.js"></script>
+        <script src="/convnet.js"></script>
         <script src="/bower_components/convnetjs/build/util.js"></script>
         <script src="/bower_components/convnetjs/build/vis.js"></script>
         <script src="/bower_components/convnetjs/build/deepqlearn.js"></script>
@@ -71,6 +71,11 @@
             <script src="/bower_components/2048/js/game_manager.js"></script>
             <script src="/bower_components/2048/js/keyboard_input_manager.js"></script>
             <script>
+var move
+var lastmove
+var spec
+var brain
+var theMover
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
@@ -85,8 +90,33 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
       }
     }
   }
+
   var numbers = document.querySelector(".show-number")
-  numbers.innerHTML = "" + theInput 
+  numbers.innerHTML = "" + theInput
+  var count = 0;
+  for (var k = 0; k < theInput.length; ++k){
+    if (theInput[k] == 0) {
+      count++
+    }
+  }
+  if (move !== 4 && move !== undefined) {
+    brain.backward(gameState.score * count)
+  }
+  if (move === 4) {
+    brain.backward(0)
+  }
+  move = brain.forward(theInput)
+  var count = 0;
+  for (var k = 0; k < theInput.length; ++k){
+    if (theInput[k] == 0) {
+      count++
+    }
+  }
+  if (count > 4) {
+    theMover(move)
+  } 
+  document.querySelector(".show-move").innerHTML = "" + move
+
   this.storage.setItem(this.gameStateKey, JSON.stringify(gameState));
 };
 KeyboardInputManager.prototype.listen = function () {
@@ -109,6 +139,9 @@ KeyboardInputManager.prototype.listen = function () {
       if (mapped !== undefined) {
         event.preventDefault();
         self.emit("move", mapped);
+        if (move !== mapped){
+          move = 4
+        }
       }
     }
 
@@ -119,17 +152,32 @@ KeyboardInputManager.prototype.listen = function () {
   });
 
   // Respond to button presses
+  theMover = function(m){
+    self.emit("move", m)
+  }
   this.bindButtonPress(".move0", function(){
     self.emit("move", 0)
+    if (move !== 0) {
+      move = 4
+    }
   })
   this.bindButtonPress(".move1", function(){
     self.emit("move", 1)
+    if (move !== 1) {
+      move = 4
+    }
   })
   this.bindButtonPress(".move2", function(){
     self.emit("move", 2)
+    if (move !== 2) {
+      move = 4
+    }
   })
   this.bindButtonPress(".move3", function(){
     self.emit("move", 3)
+    if (move !== 3) {
+      move = 4
+    }
   })
   
   this.bindButtonPress(".restart-button", this.restart)
@@ -189,18 +237,6 @@ KeyboardInputManager.prototype.listen = function () {
   });
 };
               window.requestAnimationFrame(function () {
-                new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager);
-              });
-            </script>
-            <h1>a AI to play 2048</h1>
-            <h2>Input</h2>
-            <p>16 Numbers - <span class="show-number"></span></p>
-            <h2>Output</h2>
-            <p>Moves 4 (<span class="move0">0</span>,<span class="move1">1</span>,<span class="move2">2</span>,<span class="move3">3</span>) </p>
-            <h2>Training</h2>
-            <p>Score > more</p>
-            <p>end game = less</p>
-            <textarea id="qspec" style="width:100%; height:200px;">
 var num_inputs = 16
 var num_actions = 4
 var temporal_window = 1; // amount of temporal memory. 0 = agent lives in-the-moment :)
@@ -232,8 +268,21 @@ opt.epsilon_test_time = 0.05
 opt.layer_defs = layer_defs
 opt.tdtrainer_options = tdtrainer_options
 
-var brain = new deepqlearn.Brain(num_inputs, num_actions, opt); // woohoo
+brain = new deepqlearn.Brain(num_inputs, num_actions, opt); // woohoo
 
-            </textarea>
+            
+                new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager)
+              });
+            </script>
+            <h1>a AI to play 2048</h1>
+            <h2>Input</h2>
+            <p>16 Numbers - <span class="show-number"></span></p>
+            <h2>Output</h2>
+            <p class="show-move"></p>
+            <p>Moves 4 (<span class="move0">0</span>,<span class="move1">1</span>,<span class="move2">2</span>,<span class="move3">3</span>) </p>
+            <h2>Training</h2>
+            <p>Score > more</p>
+            <p>end game = less</p>
+            <textarea id="qspec" style="width:100%; height:200px;"></textarea>
     </body>
 </html>
