@@ -78,13 +78,6 @@ var brain
 var theMover
 var theRestarter
 
-setInterval(function(){ 
-  theMover(0)
-  theMover(1)
-  theMover(2)
-  theMover(3)
-}, 500)
-
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
@@ -161,6 +154,10 @@ KeyboardInputManager.prototype.listen = function () {
   // Respond to button presses
   theMover = function(m){
     self.emit("move", m)
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout( theMover(m+1 % 4), 1000)
   }
   theRestarter = function(){
     self.emit("restart")
