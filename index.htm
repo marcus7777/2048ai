@@ -120,10 +120,10 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     var log = document.querySelector(".show-log").innerHTML.split(" ")
     
     var sumT = logTail.reduce(function (previous, current) {return +(current) + (+previous)});
-    var avgT = sumT / logTail.length
+    var avgT = Math.floor(sumT / logTail.length)
 
     var sum = log.reduce(function (previous, current) {return +(current) + (+previous)});
-    var avg = sum / log.length
+    var avg = Math.floor(sum / log.length)
 
     console.log(avg, avgT)
 
