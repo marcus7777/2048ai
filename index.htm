@@ -102,10 +102,11 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
       count++
     }
   }
+
   if (move !== 4 && move !== undefined) {
-    brain.backward(count - lastScore)
+    brain.backward(count * gameState.score) 
   }
-  lastScore = +count
+  
   if (move === 4) {
     brain.backward(-1)
   }
@@ -257,8 +258,10 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 // to just insert simple relu hidden layers.
 var layer_defs = [];
 layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
-layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
 layer_defs.push({type:'regression', num_neurons:num_actions});
 
 // options for the Temporal Difference learner that trains the above net
