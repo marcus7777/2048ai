@@ -115,6 +115,11 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     theMover(move)
   } else {
     document.querySelector(".show-log").innerHTML += " " + gameState.score
+    var logTail = document.querySelector(".show-log").innerHTML.split(" ").slice(-10)
+    var logHead = document.querySelector(".show-log").innerHTML.split(" ").slice(10)
+
+    cosole.log(logTail,logHead)
+
     theRestarter()
   } 
   document.querySelector(".show-move").innerHTML = "" + move
