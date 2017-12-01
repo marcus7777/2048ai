@@ -78,7 +78,7 @@ var brain
 var theMover
 var theRestarter
 var timer
-var resetter
+var resetter = 0
 
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
@@ -105,9 +105,10 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
   }
  
   if (move !== 4 && move !== undefined) {
-    brain.backward(count * gameState.score) 
+    brain.backward(gameState.score - lastScore) 
   }
-  
+  lastScore = gameState.score
+
   if (move === 4) {
     brain.backward(0)
   }
@@ -129,6 +130,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     console.log(avg, avgT)
 
     theRestarter()
+    resetter = 0
   } 
   document.querySelector(".show-move").innerHTML = "" + move
 
@@ -175,12 +177,10 @@ KeyboardInputManager.prototype.listen = function () {
 
     timer = setTimeout( function(){
       theMover((m+1) % 4)
-      if (resetter) {
-        clearTimeout(resetter)
-      }
-      resetter = setTimeout( function(){
+      if (resetter++ > 300) {
+        resetter = 0
         theRestarter()
-      }, 100)
+      }
     }, 5)
 
   }
@@ -270,7 +270,7 @@ KeyboardInputManager.prototype.listen = function () {
               window.requestAnimationFrame(function () {
 var num_inputs = 16
 var num_actions = 4
-var temporal_window = 1; // amount of temporal memory. 0 = agent lives in-the-moment :)
+var temporal_window = 3 // amount of temporal memory. 0 = agent lives in-the-moment :)
 var network_size = num_inputs*temporal_window + num_actions*temporal_window + num_inputs;
 
 // the value function network computes a value of taking any of the possible actions
@@ -279,10 +279,10 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 // to just insert simple relu hidden layers.
 var layer_defs = [];
 layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
-layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
 layer_defs.push({type:'regression', num_neurons:num_actions});
 
 // options for the Temporal Difference learner that trains the above net
@@ -291,10 +291,10 @@ var tdtrainer_options = {learning_rate:0.001, momentum:0.0, batch_size:64, l2_de
 
 var opt = {}
 opt.temporal_window = temporal_window
-opt.experience_size = 300
+opt.experience_size = 30000
 opt.start_learn_threshold = 4
 opt.gamma = 0.7
-opt.learning_steps_total = 200
+opt.learning_steps_total = 20000
 opt.learning_steps_burnin = 4
 opt.epsilon_min = 0.05
 opt.epsilon_test_time = 0.05
