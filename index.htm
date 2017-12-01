@@ -79,7 +79,7 @@ var theMover
 var theRestarter
 var timer
 var resetter = 0
-
+var draw_stats
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
@@ -105,7 +105,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
   }
  
   if (move !== 4 && move !== undefined) {
-    brain.backward(gameState.score - lastScore) 
+    brain.backward((gameState.score - lastScore) + (100 * count)) 
   }
   lastScore = gameState.score
 
@@ -113,22 +113,13 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     brain.backward(0)
   }
   move = brain.forward(theInput)
+  if (draw_stats) {
+    draw_stats()
+    draw_net()
+  }
   if (count !== 0) {
     theMover(move)
   } else {
-    document.querySelector(".show-log").innerHTML += " " + gameState.score
-
-    var logTail = document.querySelector(".show-log").innerHTML.split(" ").slice(-10)
-    var log = document.querySelector(".show-log").innerHTML.split(" ")
-    
-    var sumT = logTail.reduce(function (previous, current) {return +(current) + (+previous)});
-    var avgT = Math.floor(sumT / logTail.length)
-
-    var sum = log.reduce(function (previous, current) {return +(current) + (+previous)});
-    var avg = Math.floor(sum / log.length)
-
-    console.log(avg, avgT)
-
     theRestarter()
     resetter = 0
   } 
@@ -279,10 +270,8 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 // to just insert simple relu hidden layers.
 var layer_defs = [];
 layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
-layer_defs.push({type:'fc', num_neurons: 16, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 16, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 16, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 16, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
 layer_defs.push({type:'regression', num_neurons:num_actions});
 
 // options for the Temporal Difference learner that trains the above net
@@ -303,7 +292,46 @@ opt.tdtrainer_options = tdtrainer_options
 
 brain = new deepqlearn.Brain(num_inputs, num_actions, opt); // woohoo
 
-            
+var reward_graph = new cnnvis.Graph();
+draw_stats = function () {
+    if(brain.age % 200 === 0) {
+        reward_graph.add(brain.age/200, brain.average_reward_window.get_average());
+        var gcanvas = document.getElementById("graph_canvas");
+        reward_graph.drawSelf(gcanvas);
+    }
+}
+draw_net = function () {
+    var canvas = document.getElementById("net_canvas");
+    var ctx = canvas.getContext("2d");
+    var W = canvas.width;
+    var H = canvas.height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var L = brain.value_net.layers;
+    var dx = (W - 50)/L.length;
+    var x = 10;
+    var y = 40;
+    ctx.font="12px Verdana";
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillText("Value Function Approximating Neural Network:", 10, 14);
+    for(var k=0;k<L.length;k++) {
+        if(typeof(L[k].out_act)==='undefined') continue; // maybe not yet ready
+        var kw = L[k].out_act.w;
+        var n = kw.length;
+        var dy = (H-50)/n;
+        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillText(L[k].layer_type + "(" + n + ")", x, 35);
+        for(var q=0;q<n;q++) {
+            var v = Math.floor(kw[q]*100);
+            if(v >= 0) ctx.fillStyle = "rgb(0,0," + v + ")";
+            if(v < 0) ctx.fillStyle = "rgb(" + (-v) + ",0,0)";
+            ctx.fillRect(x,y,10,10);
+            y += 12;
+            if(y>H-25) { y = 40; x += 12};
+        }
+        x += 50;
+        y = 40;
+    }
+}
                 new GameManager(4, KeyboardInputManager, HTMLActuator, LocalStorageManager)
               });
             </script>
@@ -313,6 +341,8 @@ brain = new deepqlearn.Brain(num_inputs, num_actions, opt); // woohoo
             <h2>Output</h2>
             <p class="show-move"></p>
             <p>Moves 4 (<span class="move0">0</span>,<span class="move1">1</span>,<span class="move2">2</span>,<span class="move3">3</span>) </p>
+            <canvas id="graph_canvas" width="350" height="150"></canvas><br />
+            <canvas id="net_canvas" width="700" height="200"></canvas><br />
             <h2>Training</h2>
             <p>Score > more</p>
             <p>end game = less</p>
