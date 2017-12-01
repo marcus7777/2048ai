@@ -102,23 +102,30 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
       count++
     }
   }
-
+ 
   if (move !== 4 && move !== undefined) {
     brain.backward(count * gameState.score) 
   }
   
   if (move === 4) {
-    brain.backward(-1)
+    brain.backward(0)
   }
   move = brain.forward(theInput)
   if (count > 1) {
     theMover(move)
   } else {
     document.querySelector(".show-log").innerHTML += " " + gameState.score
-    var logTail = document.querySelector(".show-log").innerHTML.split(" ").slice(-10)
-    var logHead = document.querySelector(".show-log").innerHTML.split(" ").slice(1, 11)
 
-    console.log(logTail,logHead)
+    var logTail = document.querySelector(".show-log").innerHTML.split(" ").slice(-10)
+    var log = document.querySelector(".show-log").innerHTML.split(" ")
+    
+    var sumT = logTail.reduce(function (previous, current) {return +current += +previous});
+    var avgT = sumT / logTail.length
+
+    var sum = log.reduce(function (previous, current) {return +current += +previous});
+    var avg = sum / log.length
+
+    console.log(avg, avgT)
 
     theRestarter()
   } 
@@ -263,10 +270,10 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 // to just insert simple relu hidden layers.
 var layer_defs = [];
 layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
+layer_defs.push({type:'fc', num_neurons: 15, activation:'relu'});
 layer_defs.push({type:'regression', num_neurons:num_actions});
 
 // options for the Temporal Difference learner that trains the above net
@@ -275,8 +282,8 @@ var tdtrainer_options = {learning_rate:0.001, momentum:0.0, batch_size:64, l2_de
 
 var opt = {}
 opt.temporal_window = temporal_window
-opt.experience_size = 30000
-opt.start_learn_threshold = 1
+opt.experience_size = 300
+opt.start_learn_threshold = 4
 opt.gamma = 0.7
 opt.learning_steps_total = 200
 opt.learning_steps_burnin = 4
