@@ -77,6 +77,14 @@ var spec
 var brain
 var theMover
 var theRestarter
+
+setInterval(function(){ 
+  theMover(0)
+  theMover(1)
+  theMover(2)
+  theMover(3)
+}, 1000)
+
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
