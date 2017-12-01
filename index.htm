@@ -280,14 +280,12 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 var layer_defs = [];
 layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
 layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 25, activation:'relu'});
 layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
 layer_defs.push({type:'regression', num_neurons:num_actions});
 
 // options for the Temporal Difference learner that trains the above net
 // by backpropping the temporal difference learning rule.
-var tdtrainer_options = {learning_rate:0.001, momentum:0.0, batch_size:64, l2_decay:0.01};
+var tdtrainer_options = {learning_rate:0.01, momentum:0.0, batch_size:4, l2_decay:0.01};
 
 var opt = {}
 opt.temporal_window = temporal_window
