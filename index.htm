@@ -76,6 +76,7 @@ var lastmove
 var spec
 var brain
 var theMover
+var theRestarter
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
@@ -93,7 +94,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
 
   var numbers = document.querySelector(".show-number")
   numbers.innerHTML = "" + theInput
-  var count = 0;
+  var count = 0
   for (var k = 0; k < theInput.length; ++k){
     if (theInput[k] == 0) {
       count++
@@ -106,14 +107,10 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
     brain.backward(0)
   }
   move = brain.forward(theInput)
-  var count = 0;
-  for (var k = 0; k < theInput.length; ++k){
-    if (theInput[k] == 0) {
-      count++
-    }
-  }
-  if (count > 4) {
+  if (count > 0) {
     theMover(move)
+  } else {
+    theRestarter()
   } 
   document.querySelector(".show-move").innerHTML = "" + move
 
@@ -155,6 +152,7 @@ KeyboardInputManager.prototype.listen = function () {
   theMover = function(m){
     self.emit("move", m)
   }
+  theRestarter = this.restart
   this.bindButtonPress(".move0", function(){
     self.emit("move", 0)
     if (move !== 0) {
@@ -179,7 +177,6 @@ KeyboardInputManager.prototype.listen = function () {
       move = 4
     }
   })
-  
   this.bindButtonPress(".restart-button", this.restart)
   this.bindButtonPress(".keep-playing-button", this.keepPlaying)
 
