@@ -160,7 +160,7 @@ KeyboardInputManager.prototype.listen = function () {
     }
     timer = setTimeout( function(){
       theMover((m+1) % 4)
-    }, 1000)
+    }, 10)
   }
   theRestarter = function(){
     self.emit("restart")
