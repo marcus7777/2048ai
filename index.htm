@@ -119,7 +119,7 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
   if (count > 1) {
     theMover(move)
   } else {
-    document.querySelector(".show-log").innerHTML = " " + gameState.score
+    document.querySelector(".show-log").innerHTML += " " + gameState.score
     theRestarter()
   } 
   document.querySelector(".show-move").innerHTML = "" + move
