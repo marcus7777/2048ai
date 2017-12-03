@@ -80,10 +80,13 @@ var theRestarter
 var timer
 var resetter = 0
 var draw_stats
+var maxScore = 0
+var minScore = 0
 LocalStorageManager.prototype.setGameState = function (gameState) {
   var i
   var j
   var theInput = []
+  var count = 0
 
   for (i = 0; i < 4; ++i) {
     for (j = 0; j < 4; ++j) {    
@@ -91,28 +94,36 @@ LocalStorageManager.prototype.setGameState = function (gameState) {
         theInput.push(gameState.grid.cells[i][j].value)
       } else {
         theInput.push(0)
+        count++
       }
     }
   }
 
   var numbers = document.querySelector(".show-number")
   numbers.innerHTML = "" + theInput
-  var count = 0
-  for (var k = 0; k < theInput.length; ++k){
-    if (theInput[k] == 0) {
-      count++
-    }
-  }
  
   if (move !== 4 && move !== undefined) {
-    brain.backward((gameState.score - lastScore) + (100 * count)) 
+    if (count < 5) {
+      brain.backward(count * gameState.score)
+    } else {
+      brain.backward(- (10 - count) * (10 - count))
+    }
   }
   lastScore = gameState.score
 
   if (move === 4) {
     brain.backward(0)
   }
-  move = brain.forward(theInput)
+  var max = theInput.reduce(function(a,b) {
+    if (a > b) {
+      return a
+    } else {
+      return b
+    }
+  },0)
+  
+  move = brain.forward(theInput.map(function(a) {return a / max }))
+
   if (draw_stats) {
     draw_stats()
     draw_net()
@@ -231,8 +242,7 @@ KeyboardInputManager.prototype.listen = function () {
   });
 
   gameContainer.addEventListener(this.eventTouchend, function (event) {
-    if ((!window.navigator.msPointerEnabled && event.touches.length > 0) ||
-        event.targetTouches.length > 0) {
+    if ((!window.navigator.msPointerEnabled && event.touches.length > 0) || event.targetTouches.length > 0) {
       return; // Ignore if still touching with one or more fingers
     }
 
@@ -261,7 +271,7 @@ KeyboardInputManager.prototype.listen = function () {
               window.requestAnimationFrame(function () {
 var num_inputs = 16
 var num_actions = 4
-var temporal_window = 3 // amount of temporal memory. 0 = agent lives in-the-moment :)
+var temporal_window = 0 // amount of temporal memory. 0 = agent lives in-the-moment :)
 var network_size = num_inputs*temporal_window + num_actions*temporal_window + num_inputs;
 
 // the value function network computes a value of taking any of the possible actions
@@ -269,22 +279,23 @@ var network_size = num_inputs*temporal_window + num_actions*temporal_window + nu
 // but user could also equivalently instead use opt.hidden_layer_sizes = [20,20]
 // to just insert simple relu hidden layers.
 var layer_defs = [];
-layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size});
-layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
-layer_defs.push({type:'fc', num_neurons: 50, activation:'relu'});
-layer_defs.push({type:'regression', num_neurons:num_actions});
+layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:network_size})
+layer_defs.push({type:'fc', num_neurons: 58, activation:'relu'})
+layer_defs.push({type:'fc', num_neurons: 58, activation:'relu'})
+layer_defs.push({type:'fc', num_neurons: 58, activation:'relu'})
+layer_defs.push({type:'regression', num_neurons:num_actions})
 
 // options for the Temporal Difference learner that trains the above net
 // by backpropping the temporal difference learning rule.
-var tdtrainer_options = {learning_rate:0.01, momentum:0.0, batch_size:4, l2_decay:0.01};
+var tdtrainer_options = {learning_rate:0.0001, momentum:0.0, batch_size:12, l2_decay:0.0001};
 
 var opt = {}
 opt.temporal_window = temporal_window
 opt.experience_size = 30000
 opt.start_learn_threshold = 4
-opt.gamma = 0.7
+opt.gamma = 0.9
 opt.learning_steps_total = 20000
-opt.learning_steps_burnin = 4
+opt.learning_steps_burnin = 76
 opt.epsilon_min = 0.05
 opt.epsilon_test_time = 0.05
 opt.layer_defs = layer_defs
